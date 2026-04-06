@@ -1,58 +1,55 @@
-import json
-import random
-from env.utils import calculate_similarity
+import gradio as gr
+from env.resume_env import ResumeEnv
 
 
-class ResumeEnv:
+def run_optimizer():
+    env = ResumeEnv(task="medium")
 
-    def __init__(self, task="easy"):
-        self.task = task
-        self.data = self.load_task(task)
+    state = env.reset()
+    initial = state["current_score"]
 
-    def load_task(self, task):
-        with open(f"tasks/{task}.json") as f:
-            return json.load(f)
+    steps = []
+    actions = [
+        "Add relevant skills",
+        "Improve experience",
+        "Optimize keywords",
+        "Rewrite summary professionally"
+    ]
 
-    def reset(self):
-        # ✅ Use user input if provided
-        if hasattr(self, "resume") and hasattr(self, "job_description"):
-            self.job = self.job_description
-        else:
-            sample = random.choice(self.data)
-            self.resume = sample["resume"]
-            self.job = sample["job_description"]
+    for i, action in enumerate(actions):
+        state, reward, done, _ = env.step(action)
+        steps.append(f"Step {i+1}: {action} → Score: {state['current_score']:.3f}")
 
-        # ✅ Calculate initial score
-        self.score = calculate_similarity(self.resume, self.job)
+    final = state["current_score"]
+    improvement = (final - initial) * 100
 
-        return {
-            "resume": self.resume,
-            "job_description": self.job,
-            "current_score": self.score
-        }
+    return (
+        f"{initial:.3f}",
+        f"{final:.3f} ({improvement:+.2f}%)",
+        "\n".join(steps),
+        state["resume"]
+    )
 
-    def step(self, action):
-        old_score = self.score
 
-        # ✅ Simulate AI improvements
-        if "skills" in action.lower():
-            self.resume += " Python Machine Learning AI"
-        elif "experience" in action.lower():
-            self.resume += " Built real-world ML projects"
-        elif "keywords" in action.lower():
-            self.resume += " data analysis NLP deep learning"
-        else:
-            self.resume += " professional summary updated"
+# 🎨 CLEAN UI
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
-        # ✅ Recalculate score
-        new_score = calculate_similarity(self.resume, self.job)
+    gr.Markdown("# 🤖 AI Resume Optimization Agent")
+    gr.Markdown("Automatically improves a resume step-by-step using AI.")
 
-        reward = new_score - old_score
-        self.score = new_score
+    btn = gr.Button("🚀 Generate Optimization")
 
-        
-        return {
-            "resume": self.resume,
-            "job_description": self.job,
-            "current_score": self.score
-        }, reward, False, {}
+    with gr.Row():
+        initial = gr.Textbox(label="Initial Score")
+        final = gr.Textbox(label="Final Score (+ improvement %)")
+    
+    steps = gr.Textbox(label="📊 Steps Taken", lines=8)
+    output_resume = gr.Textbox(label="✨ Optimized Resume", lines=10)
+
+    btn.click(
+        fn=run_optimizer,
+        inputs=[],
+        outputs=[initial, final, steps, output_resume]
+    )
+
+demo.launch()
