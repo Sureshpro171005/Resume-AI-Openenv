@@ -1,5 +1,10 @@
 name: resume-ai-openenv
-description: AI agent that optimizes resumes for job matching
+
+description: >
+  An AI environment where an agent improves resumes step-by-step
+  to better match job descriptions using reward-based feedback.
+
+version: 1.0
 
 actions:
   - add_skills
@@ -7,9 +12,23 @@ actions:
   - optimize_keywords
   - rewrite_summary
 
-observation:
+observation_space:
   - resume
   - job_description
   - current_score
 
-reward: score improvement (0 to 1)
+reward:
+  type: continuous
+  range: [0, 1]
+  description: change in similarity score between resume and job description
+
+tasks:
+  - name: easy
+    description: basic skill matching
+  - name: medium
+    description: skills and experience optimization
+  - name: hard
+    description: full resume optimization for complex roles
+
+environment:
+  entry_point: env.resume_env:ResumeEnv
