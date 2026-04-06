@@ -1,3 +1,1 @@
 gradio
-sentence-transformers
-scikit-learn

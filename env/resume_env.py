@@ -1,57 +1,51 @@
-import gradio as gr
-from env.resume_env import ResumeEnv
+import json
+import random
+from env.utils import calculate_similarity
 
 
-def run_optimizer():
-    env = ResumeEnv(task="medium")
+class ResumeEnv:
 
-    state = env.reset()
-    initial = state["current_score"]
+    def __init__(self, task="easy"):
+        self.task = task
+        self.data = self.load_task(task)
 
-    steps = []
-    actions = [
-        "Add relevant skills",
-        "Improve experience",
-        "Optimize keywords",
-        "Rewrite summary professionally"
-    ]
+    def load_task(self, task):
+        with open(f"tasks/{task}.json") as f:
+            return json.load(f)
 
-    for i, action in enumerate(actions):
-        state, reward, done = env.step(action)
-        steps.append(f"Step {i+1}: {action} → Score: {state['current_score']:.3f}")
+    def reset(self):
+        sample = random.choice(self.data)
 
-    final = state["current_score"]
-    improvement = (final - initial) * 100
+        self.resume = sample["resume"]
+        self.job = sample["job_description"]
 
-    return (
-        f"{initial:.3f}",
-        f"{final:.3f}",
-        f"{improvement:+.2f}%",
-        "\n".join(steps),
-        state["resume"]
-    )
+        self.score = calculate_similarity(self.resume, self.job)
 
+        return {
+            "resume": self.resume,
+            "job_description": self.job,
+            "current_score": self.score
+        }
 
-# 🎨 CLEAN PROFESSIONAL UI
-with gr.Blocks(theme=gr.themes.Soft()) as demo:
+    def step(self, action):
+        old_score = self.score
 
-    gr.Markdown("# 🤖 AI Resume Optimization Agent")
-    gr.Markdown("Click the button to see how AI improves a resume step-by-step.")
+        if "skills" in action.lower():
+            self.resume += " Python Machine Learning AI"
+        elif "experience" in action.lower():
+            self.resume += " Built real-world ML projects"
+        elif "keywords" in action.lower():
+            self.resume += " data analysis NLP deep learning"
+        else:
+            self.resume += " professional summary updated"
 
-    btn = gr.Button("🚀 Generate Optimization", variant="primary")
+        new_score = calculate_similarity(self.resume, self.job)
 
-    with gr.Row():
-        initial = gr.Textbox(label="📊 Initial Score")
-        final = gr.Textbox(label="📈 Final Score")
-        improvement = gr.Textbox(label="📉 Improvement")
+        reward = new_score - old_score
+        self.score = new_score
 
-    steps = gr.Textbox(label="⚙️ Optimization Steps", lines=8)
-    output_resume = gr.Textbox(label="✨ Optimized Resume", lines=10)
-
-    btn.click(
-        fn=run_optimizer,
-        inputs=[],
-        outputs=[initial, final, improvement, steps, output_resume]
-    )
-
-demo.launch()
+        return {
+            "resume": self.resume,
+            "job_description": self.job,
+            "current_score": self.score
+        }, reward, False
