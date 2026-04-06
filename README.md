@@ -1,115 +1,98 @@
-# Resume AI OpenEnv
+---
 
-## Overview
+title: Resume AI OpenEnv
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: gradio
+app_file: app.py
+pinned: false
+-------------
 
-This project is an AI environment where an agent improves resumes to better match job descriptions.
-It simulates a real-world task of resume optimization using step-based actions and reward feedback.
+# 🤖 Resume AI OpenEnv
+
+An AI-powered environment where an intelligent agent improves resumes step-by-step to better match job descriptions using reward-based learning.
 
 ---
 
-## Features
+## 🚀 Overview
 
-* OpenEnv compatible (`reset`, `step`)
-* Reward-based learning environment
-* Semantic similarity scoring (resume vs job)
-* 3 difficulty levels (easy → medium → hard)
-* Interactive UI using Gradio
+This project simulates a real-world resume optimization system.
+An AI agent analyzes a resume and iteratively improves it to maximize job relevance and ATS compatibility.
 
 ---
 
-## Environment Design
+## 🎯 Key Features
 
-### Observation Space
-
-* Resume text
-* Job description
-* Current similarity score
-
-### Action Space
-
-* Add relevant skills
-* Improve experience section
-* Optimize keywords for ATS
-* Rewrite summary professionally
-
-### Reward Function
-
-* Reward = change in similarity score
-* Range: 0 → 1
-* Positive reward → better alignment
-* Negative reward → worse alignment
+* OpenEnv compliant (`reset`, `step`, `state`)
+* AI agent improves resume iteratively
+* Reward-based scoring system (0.0 → 1.0)
+* Semantic similarity matching
+* 3 difficulty levels: Easy, Medium, Hard
+* Reproducible inference pipeline
+* Gradio-based UI
 
 ---
 
-## Tasks
+## 🧠 How It Works
 
-### Easy
+1. Initialize environment with a resume
+2. Agent performs actions:
 
-* Basic skill matching
-* Short resume + simple job
-
-### Medium
-
-* Skills + experience optimization
-* Moderate job description
-
-### Hard
-
-* Full resume improvement
-* Complex AI/ML job description
+   * Add relevant skills
+   * Improve experience
+   * Optimize keywords
+3. Each step updates score and resume
+4. Final optimized resume is generated
 
 ---
 
-## How It Works
+## 📊 Reward System
 
-1. Environment loads resume + job description
-2. Agent selects an action
-3. Resume is modified
-4. Similarity score is recalculated
-5. Reward is given based on improvement
+* Score range: **0.0 to 1.0**
+* Positive reward → better match
+* Negative reward → poor changes
 
 ---
 
-## Run Locally
+## 🧪 Tasks
 
-```bash
-pip install -r requirements.txt
-python inference.py
-```
+Located in `/tasks`:
 
----
-
-## Deploy (Local UI)
-
-```bash
-python app.py
-```
+* easy.json
+* medium.json
+* hard.json
 
 ---
 
-## Project Structure
+## ⚙️ Project Structure
 
-```
-resume-ai-openenv/
+Resume-AI-Openenv/
 │
 ├── env/
 ├── tasks/
-├── inference.py
 ├── app.py
+├── inference.py
 ├── openenv.yaml
-├── Dockerfile
 ├── requirements.txt
+├── Dockerfile
 └── README.md
-```
 
 ---
 
-## Future Improvements
+## ▶️ Run Locally
 
-* LLM-powered resume rewriting
-* Reinforcement learning agent
-* Real job dataset integration
-* Multi-step optimization tracking
+pip install -r requirements.txt
+python inference.py
 
 ---
 
+## 🌐 Deployment
+
+Hosted on Hugging Face Spaces using Gradio.
+
+---
+
+## 👨‍💻 Author
+
+Suresh 🚀
