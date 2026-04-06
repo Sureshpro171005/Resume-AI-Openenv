@@ -4,8 +4,13 @@ from env.resume_env import ResumeEnv
 env = ResumeEnv(task="medium")
 
 def run_optimizer(resume_text, job_desc):
-    state = env.reset()
+    env = ResumeEnv(task="medium")
 
+    # ✅ Inject user inputs into environment
+    env.resume = resume_text
+    env.job_description = job_desc
+
+    state = env.reset()
     initial = state["current_score"]
 
     steps = []
@@ -21,12 +26,11 @@ def run_optimizer(resume_text, job_desc):
         steps.append(f"Step {i+1}: {action} → Score: {state['current_score']:.3f}")
 
     final = state["current_score"]
-    improvement = final - initial
+    improvement = (final - initial) * 100
 
     return (
         f"{initial:.3f}",
-        f"{final:.3f}",
-        f"{improvement:+.3f}",
+        f"{final:.3f} ({improvement:+.2f}%)",
         "\n".join(steps),
         state["resume"]
     )
