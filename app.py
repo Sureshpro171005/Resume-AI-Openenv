@@ -1,16 +1,11 @@
 import gradio as gr
 from env.resume_env import ResumeEnv
 
+env = ResumeEnv(task="medium")
 
-def run_optimizer(resume_text, job_text):
-    # Create environment
-    env = ResumeEnv(task="medium")
-
-    # Inject user input
-    env.resume = resume_text
-    env.job_description = job_text
-
+def run_optimizer(resume_text, job_desc):
     state = env.reset()
+
     initial = state["current_score"]
 
     steps = []
@@ -23,49 +18,54 @@ def run_optimizer(resume_text, job_text):
 
     for i, action in enumerate(actions):
         state, reward, done, _ = env.step(action)
-        steps.append(f"[STEP {i}] {action} → Score: {state['current_score']:.3f}")
+        steps.append(f"Step {i+1}: {action} → Score: {state['current_score']:.3f}")
 
-    final_score = state["current_score"]
-    improvement = (final_score - initial) * 100
+    final = state["current_score"]
+    improvement = final - initial
 
     return (
         f"{initial:.3f}",
-        f"{final_score:.3f} ({improvement:+.2f}%)",
+        f"{final:.3f}",
+        f"{improvement:+.3f}",
         "\n".join(steps),
         state["resume"]
     )
 
+# 🎨 UI DESIGN
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
-with gr.Blocks() as demo:
     gr.Markdown("# 🤖 AI Resume Optimization Agent")
+    gr.Markdown("Improve your resume step-by-step using AI.")
 
-    # 🔥 INPUTS
-    resume_input = gr.Textbox(
-        label="Paste Your Resume",
-        lines=6,
-        placeholder="Enter your resume content here..."
-    )
+    with gr.Row():
+        with gr.Column():
+            resume_input = gr.Textbox(
+                label="📄 Your Resume",
+                placeholder="Paste your resume here...",
+                lines=10
+            )
 
-    job_input = gr.Textbox(
-        label="Job Description",
-        lines=6,
-        placeholder="Paste job description here..."
-    )
+        with gr.Column():
+            job_input = gr.Textbox(
+                label="💼 Job Description",
+                placeholder="Paste job description...",
+                lines=10
+            )
 
-    btn = gr.Button("Generate 🚀")
+    btn = gr.Button("🚀 Optimize Resume", variant="primary")
 
-    # 🔥 OUTPUTS
-    initial = gr.Textbox(label="Initial Score")
-    final = gr.Textbox(label="Final Score (+ improvement %)")
-    steps = gr.Textbox(label="Steps Taken")
-    resume = gr.Textbox(label="Optimized Resume", lines=10)
+    with gr.Row():
+        initial = gr.Textbox(label="Initial Score")
+        final = gr.Textbox(label="Final Score")
+        improvement = gr.Textbox(label="Improvement")
 
-    # 🔗 CONNECT BUTTON
+    steps = gr.Textbox(label="📊 Optimization Steps", lines=8)
+    output_resume = gr.Textbox(label="✨ Optimized Resume", lines=10)
+
     btn.click(
         fn=run_optimizer,
         inputs=[resume_input, job_input],
-        outputs=[initial, final, steps, resume]
+        outputs=[initial, final, improvement, steps, output_resume]
     )
-
 
 demo.launch()
