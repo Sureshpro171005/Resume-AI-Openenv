@@ -17,7 +17,7 @@ def run_optimizer():
     ]
 
     for i, action in enumerate(actions):
-        state, reward, done, _ = env.step(action)
+        state, reward, done = env.step(action)
         steps.append(f"Step {i+1}: {action} → Score: {state['current_score']:.3f}")
 
     final = state["current_score"]
@@ -25,31 +25,33 @@ def run_optimizer():
 
     return (
         f"{initial:.3f}",
-        f"{final:.3f} ({improvement:+.2f}%)",
+        f"{final:.3f}",
+        f"{improvement:+.2f}%",
         "\n".join(steps),
         state["resume"]
     )
 
 
-# 🎨 CLEAN UI
+# 🎨 CLEAN PROFESSIONAL UI
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     gr.Markdown("# 🤖 AI Resume Optimization Agent")
-    gr.Markdown("Automatically improves a resume step-by-step using AI.")
+    gr.Markdown("Click the button to see how AI improves a resume step-by-step.")
 
-    btn = gr.Button("🚀 Generate Optimization")
+    btn = gr.Button("🚀 Generate Optimization", variant="primary")
 
     with gr.Row():
-        initial = gr.Textbox(label="Initial Score")
-        final = gr.Textbox(label="Final Score (+ improvement %)")
-    
-    steps = gr.Textbox(label="📊 Steps Taken", lines=8)
+        initial = gr.Textbox(label="📊 Initial Score")
+        final = gr.Textbox(label="📈 Final Score")
+        improvement = gr.Textbox(label="📉 Improvement")
+
+    steps = gr.Textbox(label="⚙️ Optimization Steps", lines=8)
     output_resume = gr.Textbox(label="✨ Optimized Resume", lines=10)
 
     btn.click(
         fn=run_optimizer,
         inputs=[],
-        outputs=[initial, final, steps, output_resume]
+        outputs=[initial, final, improvement, steps, output_resume]
     )
 
 demo.launch()
