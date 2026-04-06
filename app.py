@@ -29,7 +29,7 @@ demo = gr.Interface(
         gr.Text(label="Steps"),
         gr.Textbox(label="Optimized Resume", lines=10)
     ],
-    title="🔥 AI Resume Optimization Agent"
+    title=" AI Resume Optimization Agent"
 )
 
 demo.launch()
