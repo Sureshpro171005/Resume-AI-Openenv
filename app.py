@@ -11,25 +11,35 @@ def run_optimizer():
     actions = [
         "Add relevant skills",
         "Improve experience",
-        "Optimize keywords"
+        "Optimize keywords",
+        "Rewrite summary professionally"
     ]
 
-    for action in actions:
-        state, reward, _ = env.step(action)
-        steps.append(f"{action} → Score: {state['current_score']:.3f}")
+    for i, action in enumerate(actions):
+        state, reward, done, _ = env.step(action)
+        steps.append(f"[STEP {i}] {action} → Score: {state['current_score']:.3f}")
 
-    return initial, state["current_score"], "\n".join(steps), state["resume"]
+    return (
+        str(initial),
+        str(state["current_score"]),
+        "\n".join(steps),
+        state["resume"]
+    )
 
-demo = gr.Interface(
-    fn=run_optimizer,
-    inputs=[],
-    outputs=[
-        gr.Text(label="Initial Score"),
-        gr.Text(label="Final Score"),
-        gr.Text(label="Steps"),
-        gr.Textbox(label="Optimized Resume", lines=10)
-    ],
-    title=" AI Resume Optimization Agent"
-)
+with gr.Blocks() as demo:
+    gr.Markdown("# 🤖 AI Resume Optimization Agent")
+
+    btn = gr.Button("Generate 🚀")
+
+    initial = gr.Textbox(label="Initial Score")
+    final = gr.Textbox(label="Final Score")
+    steps = gr.Textbox(label="Steps")
+    resume = gr.Textbox(label="Optimized Resume", lines=10)
+
+    btn.click(
+        fn=run_optimizer,
+        inputs=[],
+        outputs=[initial, final, steps, resume]
+    )
 
 demo.launch()
