@@ -18,7 +18,7 @@ An AI-powered environment where an intelligent agent improves resumes step-by-st
 ## 🚀 Overview
 
 This project simulates a real-world resume optimization system.
-An AI agent analyzes a resume and iteratively improves it to maximize job relevance and ATS compatibility.
+An AI agent analyzes a resume and iteratively improves it to maximize job relevance and ATS (Applicant Tracking System) compatibility.
 
 ---
 
@@ -28,7 +28,11 @@ An AI agent analyzes a resume and iteratively improves it to maximize job releva
 * AI agent improves resume iteratively
 * Reward-based scoring system (0.0 → 1.0)
 * Semantic similarity matching
-* 3 difficulty levels: Easy, Medium, Hard
+* 3 difficulty levels:
+
+  * Easy
+  * Medium
+  * Hard
 * Reproducible inference pipeline
 * Gradio-based UI
 
@@ -51,7 +55,7 @@ An AI agent analyzes a resume and iteratively improves it to maximize job releva
 
 * Score range: **0.0 to 1.0**
 * Positive reward → better match
-* Negative reward → poor changes
+* Negative reward → poor optimization
 
 ---
 
@@ -67,6 +71,7 @@ Located in `/tasks`:
 
 ## ⚙️ Project Structure
 
+```plaintext
 Resume-AI-Openenv/
 │
 ├── env/
@@ -77,13 +82,16 @@ Resume-AI-Openenv/
 ├── requirements.txt
 ├── Dockerfile
 └── README.md
+```
 
 ---
 
 ## ▶️ Run Locally
 
+```bash
 pip install -r requirements.txt
 python inference.py
+```
 
 ---
 
@@ -93,6 +101,12 @@ Hosted on Hugging Face Spaces using Gradio.
 
 ---
 
-## 👨‍💻 Author
+## 🏆 Use Cases
 
-Suresh 🚀
+* Resume optimization tools
+* AI career assistants
+* ATS-friendly resume builders
+* Reinforcement learning environments
+
+---
+
