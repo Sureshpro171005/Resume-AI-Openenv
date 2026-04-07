@@ -1,6 +1,6 @@
-gradio
-matplotlib
 fastapi
 uvicorn
 sentence-transformers
 openai
+matplotlib
+gradio
