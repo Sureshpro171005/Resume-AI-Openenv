@@ -1,0 +1,15 @@
+[project]
+name = "resume-ai-openenv"
+version = "0.1.0"
+description = "AI Resume Optimization OpenEnv"
+authors = [
+    { name = "Suresh" }
+]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "gradio",
+    "sentence-transformers",
+    "openai",
+    "matplotlib"
+]
