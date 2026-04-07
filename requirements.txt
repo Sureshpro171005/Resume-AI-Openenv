@@ -1,4 +1,4 @@
 gradio
 sentence-transformers
-torch
 matplotlib
+openai
