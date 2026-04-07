@@ -14,7 +14,6 @@ class ActionRequest(BaseModel):
 def reset():
     print("START")
     state = env.reset()
-
     return {
         "resume": state["resume"],
         "job_description": state["job_description"],
@@ -25,9 +24,7 @@ def reset():
 @app.post("/step")
 def step(req: ActionRequest):
     print("STEP", req.action)
-
     state, reward, done = env.step(req.action)
-
     return {
         "resume": state["resume"],
         "score": state["current_score"],
