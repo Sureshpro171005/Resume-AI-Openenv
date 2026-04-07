@@ -32,3 +32,8 @@ tasks:
 
 environment:
   entry_point: env.resume_env:ResumeEnv
+
+
+server:
+  type: http
+  base_path: /
