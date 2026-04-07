@@ -3,25 +3,42 @@ import uvicorn
 
 app = FastAPI()
 
-# dummy state
+# Global state
 state = {
     "resume": "sample resume",
     "job_description": "sample job",
     "score": 0.3
 }
 
-@app.post("/")
+@app.get("/")
+def health():
+    return {"status": "ok"}
+
 @app.post("/reset")
 def reset():
-    return state
+    global state
+    state = {
+        "resume": "sample resume",
+        "job_description": "sample job",
+        "score": 0.3
+    }
+    return state   # return the reset state
 
 @app.post("/step")
 async def step(request: Request):
+    body = await request.json()
+
+    action = body.get("action", "")
+
+    # Update state based on action
+    state["resume"] = action if action else state["resume"]
+    state["score"] = round(state["score"] + 0.1, 2)
+
     return {
-        "resume": "updated resume",
-        "score": 0.4,
+        "observation": state,
         "reward": 0.1,
-        "done": False
+        "done": False,
+        "info": {}
     }
 
 if __name__ == "__main__":
