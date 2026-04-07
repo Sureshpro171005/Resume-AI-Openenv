@@ -104,11 +104,14 @@ python app.py
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Demo & Code
 
 
-👉 Try the app here:
+👉 Live App:
 https://huggingface.co/spaces/suresh1710/resume-ai-openenv
+
+👉 Live App:
+https://github.com/Sureshpro171005/Resume-AI-Openenv
 
 ---
 
