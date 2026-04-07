@@ -1,35 +1,15 @@
 import gradio as gr
+import matplotlib.pyplot as plt
 from env.resume_env import ResumeEnv
 
 env = ResumeEnv(task="medium")
 
-def run_optimizer(user_resume, user_job):
+def run_optimizer():
     try:
-        # Override env data with user input
-        env.resume = user_resume
-        env.job = user_job
+        state = env.reset()
+        initial_score = state["current_score"]
 
-        # Initial score
-        initial_score = env.score = env.score = env.score = env.score = env.score = 0
-        initial_score = env.score = env.score = env.score = env.score = env.score = 0
-
-        initial_score = env.score = env.score = env.score = env.score = env.score = 0
-
-        initial_score = env.score = env.score = env.score = env.score = env.score = 0
-
-        initial_score = env.score = env.score = env.score = env.score = env.score = 0
-
-        # Proper calculation
-        state = {
-            "resume": user_resume,
-            "job_description": user_job,
-            "current_score": env.score
-        }
-
-        from env.utils import calculate_similarity
-        initial_score = calculate_similarity(user_resume, user_job)
-        env.score = initial_score
-
+        scores = [initial_score]
         steps = []
 
         actions = [
@@ -40,17 +20,30 @@ def run_optimizer(user_resume, user_job):
 
         for action in actions:
             state, _, _, _ = env.step(action)
+            scores.append(state["current_score"])
             steps.append(f"✔ {action} → {state['current_score']:.3f}")
 
         final_score = state["current_score"]
+        improvement = (final_score - initial_score) * 100
 
-        improvement = ((final_score - initial_score) * 100)
+        # 📊 Create graph
+        plt.figure()
+        plt.plot(scores, marker='o')
+        plt.title("Score Improvement")
+        plt.xlabel("Steps")
+        plt.ylabel("Score")
+        plt.grid()
+
+        graph_path = "score.png"
+        plt.savefig(graph_path)
+        plt.close()
 
         return (
             f"{initial_score:.3f}",
-            f"{final_score:.3f}  (+{improvement:.1f}%)",
+            f"{final_score:.3f} (+{improvement:.1f}%)",
             "\n".join(steps),
-            state["resume"]
+            state["resume"],
+            graph_path
         )
 
     except Exception as e:
@@ -58,42 +51,30 @@ def run_optimizer(user_resume, user_job):
             "Error",
             "Error",
             f"Error: {str(e)}",
-            "Error"
+            "Error",
+            None
         )
 
 
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
     gr.Markdown("## 🤖 AI Resume Optimization Agent")
-    gr.Markdown("Improve your resume automatically using AI")
+    gr.Markdown("Automatically improves resume using AI actions")
 
-    # INPUT SECTION
-    with gr.Group():
-        resume_input = gr.Textbox(
-            label="📄 Paste Your Resume",
-            placeholder="Enter your resume here...",
-            lines=6
-        )
+    #   clean UI
+    btn = gr.Button("🚀 Optimize Resume")
 
-        job_input = gr.Textbox(
-            label="💼 Job Description",
-            placeholder="Paste job description here...",
-            lines=6
-        )
+    # 📊 Outputs
+    initial = gr.Textbox(label="📊 Initial Score")
+    final = gr.Textbox(label="📈 Final Score (with improvement)")
+    steps = gr.Textbox(label="⚙️ Steps Taken", lines=4)
+    resume = gr.Textbox(label="✅ Optimized Resume", lines=8)
+    graph = gr.Image(label="📊 Score Improvement Graph")
 
-    generate_btn = gr.Button("🚀 Optimize Resume")
-
-    # OUTPUT SECTION
-    with gr.Group():
-        initial = gr.Textbox(label="📊 Initial Score")
-        final = gr.Textbox(label="📈 Final Score (with improvement)")
-        steps = gr.Textbox(label="⚙️ Steps Taken", lines=4)
-        optimized = gr.Textbox(label="✅ Optimized Resume", lines=8)
-
-    generate_btn.click(
+    btn.click(
         fn=run_optimizer,
-        inputs=[resume_input, job_input],
-        outputs=[initial, final, steps, optimized]
+        inputs=[],
+        outputs=[initial, final, steps, resume, graph]
     )
 
 demo.launch()
