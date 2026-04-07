@@ -3,12 +3,35 @@ from env.resume_env import ResumeEnv
 
 env = ResumeEnv(task="medium")
 
-def run_optimizer():
+def run_optimizer(user_resume, user_job):
     try:
-        state = env.reset()
-        initial = state["current_score"]
+        # Override env data with user input
+        env.resume = user_resume
+        env.job = user_job
+
+        # Initial score
+        initial_score = env.score = env.score = env.score = env.score = env.score = 0
+        initial_score = env.score = env.score = env.score = env.score = env.score = 0
+
+        initial_score = env.score = env.score = env.score = env.score = env.score = 0
+
+        initial_score = env.score = env.score = env.score = env.score = env.score = 0
+
+        initial_score = env.score = env.score = env.score = env.score = env.score = 0
+
+        # Proper calculation
+        state = {
+            "resume": user_resume,
+            "job_description": user_job,
+            "current_score": env.score
+        }
+
+        from env.utils import calculate_similarity
+        initial_score = calculate_similarity(user_resume, user_job)
+        env.score = initial_score
 
         steps = []
+
         actions = [
             "Add relevant skills",
             "Improve experience",
@@ -17,11 +40,15 @@ def run_optimizer():
 
         for action in actions:
             state, _, _, _ = env.step(action)
-            steps.append(f"{action} → Score: {state['current_score']:.3f}")
+            steps.append(f"✔ {action} → {state['current_score']:.3f}")
+
+        final_score = state["current_score"]
+
+        improvement = ((final_score - initial_score) * 100)
 
         return (
-            str(initial),
-            str(state["current_score"]),
+            f"{initial_score:.3f}",
+            f"{final_score:.3f}  (+{improvement:.1f}%)",
             "\n".join(steps),
             state["resume"]
         )
@@ -35,22 +62,38 @@ def run_optimizer():
         )
 
 
-with gr.Blocks() as demo:
-    gr.Markdown("# 🤖 AI Resume Optimization Agent")
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
-    # OUTPUT SECTION FIRST
-    initial = gr.Textbox(label="Initial Score")
-    final = gr.Textbox(label="Final Score")
-    steps = gr.Textbox(label="Steps Taken")
-    resume = gr.Textbox(label="Optimized Resume", lines=10)
+    gr.Markdown("## 🤖 AI Resume Optimization Agent")
+    gr.Markdown("Improve your resume automatically using AI")
 
-    # BUTTON AT BOTTOM
-    btn = gr.Button("Generate 🚀")
+    # INPUT SECTION
+    with gr.Group():
+        resume_input = gr.Textbox(
+            label="📄 Paste Your Resume",
+            placeholder="Enter your resume here...",
+            lines=6
+        )
 
-    btn.click(
+        job_input = gr.Textbox(
+            label="💼 Job Description",
+            placeholder="Paste job description here...",
+            lines=6
+        )
+
+    generate_btn = gr.Button("🚀 Optimize Resume")
+
+    # OUTPUT SECTION
+    with gr.Group():
+        initial = gr.Textbox(label="📊 Initial Score")
+        final = gr.Textbox(label="📈 Final Score (with improvement)")
+        steps = gr.Textbox(label="⚙️ Steps Taken", lines=4)
+        optimized = gr.Textbox(label="✅ Optimized Resume", lines=8)
+
+    generate_btn.click(
         fn=run_optimizer,
-        inputs=[],
-        outputs=[initial, final, steps, resume]
+        inputs=[resume_input, job_input],
+        outputs=[initial, final, steps, optimized]
     )
 
 demo.launch()
