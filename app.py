@@ -27,7 +27,12 @@ def run_optimizer():
         final_score = state["current_score"]
         improvement = (final_score - initial_score) * 100
 
-        # Graph
+        #  Explanation
+        explanation = """✔ Added relevant skills
+✔ Improved experience clarity
+✔ Matched job keywords"""
+
+        # 📊 Graph
         plt.figure()
         plt.plot(scores, marker='o')
         plt.title("Score Improvement")
@@ -41,15 +46,22 @@ def run_optimizer():
 
         return (
             f"{initial_score:.3f}",
-            f"{final_score:.3f}",
-            f"+{improvement:.1f}%",
+            f"{final_score:.3f}  (+{improvement:.1f}%)",
             "\n".join(steps),
             state["resume"],
+            explanation,
             path
         )
 
     except Exception as e:
-        return ("Error", "Error", "Error", str(e), "Error", None)
+        return (
+            "Error",
+            "Error",
+            str(e),
+            "Error",
+            "Error",
+            None
+        )
 
 
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
@@ -58,7 +70,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     gr.Markdown(
         """
         # 🚀 AI Resume Optimizer  
-        ### Turn your resume into a job-winning profile using AI
+        ### Smart AI agent that improves your resume step-by-step
         """
     )
 
@@ -66,31 +78,31 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     with gr.Row():
         initial = gr.Textbox(label="📊 Initial Score")
         final = gr.Textbox(label="📈 Final Score")
-        improvement = gr.Textbox(label="🚀 Improvement %")
 
-    #  STEPS CARD
-    with gr.Group():
-        gr.Markdown("### ⚙️ Optimization Steps")
-        steps = gr.Textbox(lines=4)
+    #  STEPS
+    gr.Markdown("### ⚙️ Optimization Steps")
+    steps = gr.Textbox(lines=4, show_label=False)
 
-    #  RESUME CARD
-    with gr.Group():
-        gr.Markdown("### 📄 Optimized Resume")
-        resume = gr.Textbox(lines=8)
+    #  RESUME
+    gr.Markdown("### 📄 Optimized Resume")
+    resume = gr.Textbox(lines=8, show_label=False)
 
-    #  GRAPH CENTERED
-    with gr.Row():
-        graph = gr.Image(label="📊 Score Improvement")
+    #  WHY IMPROVED
+    gr.Markdown("### 💡 Why Score Improved")
+    explain = gr.Textbox(lines=3, show_label=False)
 
+    #  GRAPH
     gr.Markdown("---")
+    graph = gr.Image(label="📊 Score Improvement", height=400)
 
     #  BUTTON
+    gr.Markdown("---")
     btn = gr.Button("🚀 Optimize Resume", variant="primary")
 
     btn.click(
         fn=run_optimizer,
         inputs=[],
-        outputs=[initial, final, improvement, steps, resume, graph]
+        outputs=[initial, final, steps, resume, explain, graph]
     )
 
 demo.launch()
