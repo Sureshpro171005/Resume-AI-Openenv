@@ -22,7 +22,7 @@ def reset():
 
 @app.post("/step")
 def step(req: ActionRequest):
-    state, reward, done, _ = env.step(req.action)  # ✅ FIXED
+    state, reward, done, _ = env.step(req.action)  
 
     return {
         "resume": state["resume"],
