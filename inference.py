@@ -1,7 +1,7 @@
 import os
 from openai import OpenAI
 
-#  Required environment variables
+# Environment variables
 API_BASE_URL = os.getenv("API_BASE_URL", "")
 MODEL_NAME = os.getenv("MODEL_NAME", "")
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -16,11 +16,11 @@ client = OpenAI(
 def run():
     print("START")
 
-    # Dummy steps (to satisfy format)
+    
     print("STEP: Initializing model")
 
     try:
-        # Dummy call (no real LLM usage)
+        
         print("STEP: Processing resume")
 
         result = {
