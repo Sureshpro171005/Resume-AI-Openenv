@@ -4,6 +4,7 @@ from env.resume_env import ResumeEnv
 
 env = ResumeEnv(task="medium")
 
+
 def run_optimizer():
     try:
         state = env.reset()
@@ -26,7 +27,7 @@ def run_optimizer():
         final_score = state["current_score"]
         improvement = (final_score - initial_score) * 100
 
-        # 📊 Create graph
+        # Graph
         plt.figure()
         plt.plot(scores, marker='o')
         plt.title("Score Improvement")
@@ -34,48 +35,62 @@ def run_optimizer():
         plt.ylabel("Score")
         plt.grid()
 
-        graph_path = "score.png"
-        plt.savefig(graph_path)
+        path = "graph.png"
+        plt.savefig(path)
         plt.close()
 
         return (
             f"{initial_score:.3f}",
-            f"{final_score:.3f} (+{improvement:.1f}%)",
+            f"{final_score:.3f}",
+            f"+{improvement:.1f}%",
             "\n".join(steps),
             state["resume"],
-            graph_path
+            path
         )
 
     except Exception as e:
-        return (
-            "Error",
-            "Error",
-            f"Error: {str(e)}",
-            "Error",
-            None
-        )
+        return ("Error", "Error", "Error", str(e), "Error", None)
 
 
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
-    gr.Markdown("## 🤖 AI Resume Optimization Agent")
-    gr.Markdown("Automatically improves resume using AI actions")
+    #  HEADER
+    gr.Markdown(
+        """
+        # 🚀 AI Resume Optimizer  
+        ### Turn your resume into a job-winning profile using AI
+        """
+    )
 
-    #   clean UI
-    
+    #  SCORE CARDS
+    with gr.Row():
+        initial = gr.Textbox(label="📊 Initial Score")
+        final = gr.Textbox(label="📈 Final Score")
+        improvement = gr.Textbox(label="🚀 Improvement %")
 
-    # 📊 Outputs
-    initial = gr.Textbox(label="📊 Initial Score")
-    final = gr.Textbox(label="📈 Final Score (with improvement)")
-    steps = gr.Textbox(label="⚙️ Steps Taken", lines=4)
-    resume = gr.Textbox(label="✅ Optimized Resume", lines=8)
-    graph = gr.Image(label="📊 Score Improvement Graph")
+    #  STEPS CARD
+    with gr.Group():
+        gr.Markdown("### ⚙️ Optimization Steps")
+        steps = gr.Textbox(lines=4)
 
-    btn = gr.Button("🚀 Optimize Resume")
+    #  RESUME CARD
+    with gr.Group():
+        gr.Markdown("### 📄 Optimized Resume")
+        resume = gr.Textbox(lines=8)
+
+    #  GRAPH CENTERED
+    with gr.Row():
+        graph = gr.Image(label="📊 Score Improvement")
+
+    gr.Markdown("---")
+
+    #  BUTTON
+    btn = gr.Button("🚀 Optimize Resume", variant="primary")
+
     btn.click(
         fn=run_optimizer,
         inputs=[],
-        outputs=[initial, final, steps, resume, graph]
+        outputs=[initial, final, improvement, steps, resume, graph]
     )
 
 demo.launch()
