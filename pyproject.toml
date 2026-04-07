@@ -11,5 +11,9 @@ dependencies = [
     "gradio",
     "sentence-transformers",
     "openai",
-    "matplotlib"
+    "matplotlib",
+    "openenv-core>=0.2.0"
 ]
+
+[project.scripts]
+server = "inference:main"
