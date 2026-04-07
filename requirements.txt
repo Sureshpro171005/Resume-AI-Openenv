@@ -1,4 +1,6 @@
 gradio
-sentence-transformers
 matplotlib
+fastapi
+uvicorn
+sentence-transformers
 openai

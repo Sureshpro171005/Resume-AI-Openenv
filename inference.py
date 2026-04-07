@@ -1,43 +1,36 @@
-import os
-from openai import OpenAI
+from fastapi import FastAPI
+from pydantic import BaseModel
+from env.resume_env import ResumeEnv
 
-# Environment variables
-API_BASE_URL = os.getenv("API_BASE_URL", "")
-MODEL_NAME = os.getenv("MODEL_NAME", "")
-HF_TOKEN = os.getenv("HF_TOKEN")
+app = FastAPI()
 
-#  OpenAI client 
-client = OpenAI(
-    base_url=API_BASE_URL,
-    api_key=HF_TOKEN
-)
+env = ResumeEnv(task="medium")
+
+class ActionRequest(BaseModel):
+    action: str
 
 
-def run():
+@app.post("/reset")
+def reset():
     print("START")
+    state = env.reset()
 
-    
-    print("STEP: Initializing model")
-
-    try:
-        
-        print("STEP: Processing resume")
-
-        result = {
-            "status": "success",
-            "message": "Resume optimized successfully"
-        }
-
-        print("STEP: Completed")
-
-    except Exception as e:
-        print("STEP: Error occurred")
-        result = {"error": str(e)}
-
-    print("END")
-
-    return result
+    return {
+        "resume": state["resume"],
+        "job_description": state["job_description"],
+        "score": state["current_score"]
+    }
 
 
-if __name__ == "__main__":
-    run()
+@app.post("/step")
+def step(req: ActionRequest):
+    print("STEP", req.action)
+
+    state, reward, done = env.step(req.action)
+
+    return {
+        "resume": state["resume"],
+        "score": state["current_score"],
+        "reward": reward,
+        "done": done
+    }

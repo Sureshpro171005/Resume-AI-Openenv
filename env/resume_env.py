@@ -48,4 +48,4 @@ class ResumeEnv:
             "resume": self.resume,
             "job_description": self.job,
             "current_score": self.score
-        }, reward, False, {}
+        }, reward, False
