@@ -106,7 +106,9 @@ python app.py
 
 ## 🌐 Live Demo
 
-👉 Deployed on Hugging Face Spaces
+
+👉 Try the app here:
+https://huggingface.co/spaces/suresh1710/resume-ai-openenv
 
 ---
 
