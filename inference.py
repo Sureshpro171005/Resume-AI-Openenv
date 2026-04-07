@@ -1,17 +1,14 @@
 from fastapi import FastAPI, Request
-from pydantic import BaseModel
 from env.resume_env import ResumeEnv
 
 app = FastAPI()
 
 env = ResumeEnv(task="medium")
 
-class ActionRequest(BaseModel):
-    action: str
 
-
+# ✅ ROOT (important)
 @app.api_route("/", methods=["GET", "POST"])
-def root():
+async def root(request: Request):
     state = env.reset()
     return {
         "resume": state["resume"],
@@ -23,7 +20,7 @@ def root():
 
 @app.api_route("/reset", methods=["GET", "POST"])
 @app.api_route("/reset/", methods=["GET", "POST"])
-def reset():
+async def reset(request: Request):
     state = env.reset()
     return {
         "resume": state["resume"],
@@ -35,8 +32,12 @@ def reset():
 
 @app.api_route("/step", methods=["POST"])
 @app.api_route("/step/", methods=["POST"])
-def step(req: ActionRequest):
-    state, reward, done, _ = env.step(req.action)
+async def step(request: Request):
+    data = await request.json()
+
+    action = data.get("action", "add_skills")  # default safe action
+
+    state, reward, done, _ = env.step(action)
 
     return {
         "resume": state["resume"],

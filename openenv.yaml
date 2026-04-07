@@ -37,3 +37,6 @@ environment:
 server:
   type: http
   base_path: /
+  endpoints:
+    reset: /reset
+    step: /step
