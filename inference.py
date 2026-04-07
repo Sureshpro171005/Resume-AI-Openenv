@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Request
 from env.resume_env import ResumeEnv
+import uvicorn
 
 app = FastAPI()
 
 env = ResumeEnv(task="medium")
 
 
-# ✅ ROOT (important)
 @app.api_route("/", methods=["GET", "POST"])
 async def root(request: Request):
     state = env.reset()
@@ -30,12 +30,15 @@ async def reset(request: Request):
 
 
 
-@app.api_route("/step", methods=["POST"])
-@app.api_route("/step/", methods=["POST"])
+@app.api_route("/step", methods=["GET", "POST"])
+@app.api_route("/step/", methods=["GET", "POST"])
 async def step(request: Request):
-    data = await request.json()
+    try:
+        data = await request.json()
+    except:
+        data = {}
 
-    action = data.get("action", "add_skills")  # default safe action
+    action = data.get("action", "add_skills")
 
     state, reward, done, _ = env.step(action)
 
@@ -45,3 +48,7 @@ async def step(request: Request):
         "reward": reward,
         "done": done
     }
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=7860)

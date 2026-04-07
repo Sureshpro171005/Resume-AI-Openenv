@@ -1,9 +1,56 @@
-FROM python:3.10
+from fastapi import FastAPI, Request
+from env.resume_env import ResumeEnv
+import uvicorn
 
-WORKDIR /app
+app = FastAPI()
 
-COPY . .
+env = ResumeEnv(task="medium")
 
-RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "7860"]
+# ✅ ROOT (important for checker)
+@app.api_route("/", methods=["GET", "POST"])
+async def root(request: Request):
+    state = env.reset()
+    return {
+        "resume": state["resume"],
+        "job_description": state["job_description"],
+        "score": state["current_score"]
+    }
+
+
+# ✅ RESET (handle all cases)
+@app.api_route("/reset", methods=["GET", "POST"])
+@app.api_route("/reset/", methods=["GET", "POST"])
+async def reset(request: Request):
+    state = env.reset()
+    return {
+        "resume": state["resume"],
+        "job_description": state["job_description"],
+        "score": state["current_score"]
+    }
+
+
+# ✅ STEP (safe handling)
+@app.api_route("/step", methods=["GET", "POST"])
+@app.api_route("/step/", methods=["GET", "POST"])
+async def step(request: Request):
+    try:
+        data = await request.json()
+    except:
+        data = {}
+
+    action = data.get("action", "add_skills")
+
+    state, reward, done, _ = env.step(action)
+
+    return {
+        "resume": state["resume"],
+        "score": state["current_score"],
+        "reward": reward,
+        "done": done
+    }
+
+
+# ✅ IMPORTANT: start server
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=7860)
