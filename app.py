@@ -62,7 +62,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     gr.Markdown("Automatically improves resume using AI actions")
 
     #   clean UI
-    btn = gr.Button("🚀 Optimize Resume")
+    
 
     # 📊 Outputs
     initial = gr.Textbox(label="📊 Initial Score")
@@ -71,6 +71,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     resume = gr.Textbox(label="✅ Optimized Resume", lines=8)
     graph = gr.Image(label="📊 Score Improvement Graph")
 
+    btn = gr.Button("🚀 Optimize Resume")
     btn.click(
         fn=run_optimizer,
         inputs=[],
