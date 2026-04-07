@@ -20,7 +20,7 @@ def run_optimizer():
         ]
 
         for action in actions:
-            state, _, _, _ = env.step(action)
+            state, reward, done = env.step(action)
             scores.append(state["current_score"])
             steps.append(f"✔ {action} → {state['current_score']:.3f}")
 
