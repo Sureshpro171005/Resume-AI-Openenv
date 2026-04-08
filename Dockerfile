@@ -7,4 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "7860"]
+# Allow the runner to choose a free port via $PORT.
+# If the runner doesn't provide PORT, fall back to 7860 for local usage.
+ENV PORT=7860
+CMD ["sh", "-c", "uvicorn inference:app --host 0.0.0.0 --port ${PORT:-7860}"]

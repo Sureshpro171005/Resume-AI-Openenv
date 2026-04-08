@@ -1,5 +1,6 @@
 import gradio as gr
 import matplotlib.pyplot as plt
+import os
 from env.resume_env import ResumeEnv
 
 env = ResumeEnv(task="medium")
@@ -105,4 +106,5 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         outputs=[initial, final, steps, resume, explain, graph]
     )
 
-demo.launch()
+port = int(os.environ.get("PORT", 7860))
+demo.launch(server_name="0.0.0.0", server_port=port)
