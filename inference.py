@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-
+import os
 
 app = FastAPI()
 
@@ -10,10 +10,12 @@ state = {
     "score": 0.3
 }
 
+# Health check
 @app.get("/")
 def health():
     return {"status": "ok"}
 
+# Reset endpoint
 @app.post("/reset")
 def reset():
     global state
@@ -22,21 +24,39 @@ def reset():
         "job_description": "sample job",
         "score": 0.3
     }
-    return state   # return the reset state
+    return state
 
+# Step endpoint
 @app.post("/step")
 async def step(request: Request):
-    body = await request.json()
+    try:
+        body = await request.json()
+        action = body.get("action", "")
 
-    action = body.get("action", "")
+        # Update state
+        if action:
+            state["resume"] = action
 
-    # Update state based on action
-    state["resume"] = action if action else state["resume"]
-    state["score"] = round(state["score"] + 0.1, 2)
+        state["score"] = round(state["score"] + 0.1, 2)
 
-    return {
-        "observation": state,
-        "reward": 0.1,
-        "done": False,
-        "info": {}
-    }
+        return {
+            "observation": state,
+            "reward": 0.1,
+            "done": False,
+            "info": {}
+        }
+
+    except Exception as e:
+        return {
+            "observation": state,
+            "reward": 0.0,
+            "done": False,
+            "info": {"error": str(e)}
+        }
+
+# IMPORTANT: Dynamic port binding (fixes your error)
+if __name__ == "__main__":
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 7860))
+    uvicorn.run(app, host="0.0.0.0", port=port)
