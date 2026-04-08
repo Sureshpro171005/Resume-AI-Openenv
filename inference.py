@@ -1,21 +1,17 @@
 from fastapi import FastAPI, Request
-import os
 
 app = FastAPI()
 
-# Global state
 state = {
     "resume": "sample resume",
     "job_description": "sample job",
     "score": 0.3
 }
 
-# Health check
 @app.get("/")
 def health():
     return {"status": "ok"}
 
-# Reset endpoint
 @app.post("/reset")
 def reset():
     global state
@@ -26,14 +22,12 @@ def reset():
     }
     return state
 
-# Step endpoint
 @app.post("/step")
 async def step(request: Request):
     try:
         body = await request.json()
         action = body.get("action", "")
 
-        # Update state
         if action:
             state["resume"] = action
 
@@ -53,10 +47,3 @@ async def step(request: Request):
             "done": False,
             "info": {"error": str(e)}
         }
-
-# Run server (dynamic port - VERY IMPORTANT)
-if __name__ == "__main__":
-    import uvicorn
-
-    port = int(os.environ.get("PORT", 7860))
-    uvicorn.run(app, host="0.0.0.0", port=port)
