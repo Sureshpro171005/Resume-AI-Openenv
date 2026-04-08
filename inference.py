@@ -54,7 +54,7 @@ async def step(request: Request):
             "info": {"error": str(e)}
         }
 
-# IMPORTANT: Dynamic port binding (fixes your error)
+# IMPORTANT: Dynamic port binding 
 if __name__ == "__main__":
     import uvicorn
 
