@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Request
+import uvicorn
+import os
 
 app = FastAPI()
 
@@ -47,3 +49,8 @@ async def step(request: Request):
             "done": False,
             "info": {"error": str(e)}
         }
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 7860))
+    uvicorn.run(app, host="0.0.0.0", port=port)
