@@ -54,7 +54,7 @@ async def step(request: Request):
             "info": {"error": str(e)}
         }
 
-# IMPORTANT: Dynamic port binding 
+# Run server (dynamic port - VERY IMPORTANT)
 if __name__ == "__main__":
     import uvicorn
 
